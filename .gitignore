@@ -1,0 +1,9 @@
+build/*
+libs/*
+include/*
+
+!*gitkeep
+
+hg.ini
+imgui.ini
+libs.ini
