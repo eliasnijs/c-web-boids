@@ -7,35 +7,6 @@ handle_input(GLFWwindow* window) {
 }
 
 internal void
-save_window(GLFWwindow* window) {
-	int32 x, y, w, h;
-	glfwGetWindowPos(window, &x, &y);
-	glfwGetWindowSize(window, &w, &h);
-	FILE* file = fopen("hg.ini", "w");
-	if (!file) {
-		print_error("Failed to save window to hg.ini");
-		return;
-	}
-	fprintf(file, "[window]\nx=%d\ny=%d\nw=%d\nh=%d\n", x, y, w, h);
-	fclose(file);
-}
-
-internal void
-read_window(GLFWwindow* window)
-{
-	FILE* file = fopen("hg.ini", "r");
-	if (!file) {
-		print_error("Failed to read window from hg.ini");
-		return;
-	}
-	int32 x, y, w, h;
-	fscanf(file, "[window]\nx=%d\ny=%d\nw=%d\nh=%d\n", &x, &y, &w, &h);
-	fclose(file);
-	glfwSetWindowPos(window, x, y);
-	glfwSetWindowSize(window, w, h);
-}
-
-internal void
 simple_error_callback(int32 error, const char* description) {
 	fprintf(stderr, "GLFW error: %s\n", description);
 }
@@ -67,7 +38,6 @@ window_init() {
 		glfwTerminate();
 		return 0x0;
 	}
-	read_window(window);
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
@@ -84,7 +54,6 @@ window_init() {
 
 internal void
 window_die(GLFWwindow* window) {
-	save_window(window);
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }
