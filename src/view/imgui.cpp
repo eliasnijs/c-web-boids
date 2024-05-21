@@ -7,7 +7,11 @@ imgui_init(GLFWwindow* window) {
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
+#ifdef __EMSCRIPTEN__
+	ImGui_ImplOpenGL3_Init("#version 100");
+#else
 	ImGui_ImplOpenGL3_Init("#version 130");
+#endif
 }
 
 internal void

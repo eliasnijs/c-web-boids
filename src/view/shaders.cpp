@@ -22,7 +22,7 @@ load_glshader(char *path, uint32 type, uint32 *shader_id) {
 	if (!success) {
 		char info[1024] = {0};
 		glGetShaderInfoLog(id, 1024, 0, info);
-		fprintf(stderr, "failed to compile shader component (%s):\n%s",
+		print_error("failed to compile shader component (%s):\n%s",
 		       path, info);
 		free(fbuffer);
 		return false;
@@ -59,7 +59,7 @@ load_glprogram(char *vertexPath, char *fragmentPath, uint32 *program_id) {
 	if (!success) {
 		char info[1024] = {0};
 		glGetShaderInfoLog(id, 1024, 0, info);
-		print_error("failed to opengl id:\n%s", info);
+		print_error("failed to create opengl program failed:\n%s", info);
 		glDeleteShader(vertex_shader);
 		glDeleteShader(fragment_shader);
 		glDeleteProgram(id);

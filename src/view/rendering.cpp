@@ -1,26 +1,23 @@
 
 typedef struct gpu_context_t GpuContext;
 struct gpu_context_t {
-	uint32 pixels_shader_program;
-	uint32 clusters_shader_program;
+	uint32 boids_program;
+	uint32 boids_vao_id;
+	uint32 boids_vbo_id;
 };
 
-internal GpuContext
-gpu_init() {
-	GpuContext gpu = { 0 };
-	gpu.pixels_shader_program = load_glprogram(
-	    "shaders/pixel_vertex.glsl", "shaders/pixel_fragment.glsl",
-	    &gpu.pixels_shader_program);
-	gpu.clusters_shader_program = load_glprogram(
-	    "shaders/cluster_vertex.glsl", "shaders/cluster_fragment.glsl",
-	    &gpu.clusters_shader_program);
-	return gpu;
+internal bool
+gpu_init(GpuContext *gpu) {
+	bool32 is_success = load_glprogram(
+	    "src/view/shaders/boids.vertex.glsl",
+	    "src/view/shaders/boids.fragment.glsl",
+	    &gpu->boids_program);
+	return is_success;
 }
 
 internal void
 gpu_die(GpuContext *gpu) {
-	glprogram_die(gpu->pixels_shader_program);
-	glprogram_die(gpu->clusters_shader_program);
+	glprogram_die(gpu->boids_program);
 }
 
 internal void
@@ -32,7 +29,6 @@ render(GpuContext *gpu, BoidsApplication *app) {
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
 	for (int32 i = 0; i < app->n; i++) {
-		// color based on velocity
 		float32 r = Clamp(0.1, abs(app->bs[i].vel.x) / 2.0f, 1.0f);
 		float32 g = 1 - r;
 		float32 b = 0.1f;

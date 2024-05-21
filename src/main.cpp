@@ -87,6 +87,10 @@ main() {
 	PROCESS.ctx.window = window;
 	PROCESS.ctx.max_fps = 60.0f;
 	init_boids_app(&PROCESS.boids_app);
+	if (!gpu_init(&PROCESS.gpu)) {
+		print_error("Failed to initialize gpu");
+		return 1;
+	}
 
 	/* main loop */
 #ifdef __EMSCRIPTEN__
