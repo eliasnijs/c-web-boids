@@ -2,7 +2,7 @@ internal bool
 load_glshader(char *path, uint32 type, uint32 *shader_id) {
 	FILE *f = fopen(path, "r");
 	if (!f) {
-		print_error("failed to find shader path");
+		print_error("failed to open shader path");
 		return false;
 	}
 
@@ -43,7 +43,7 @@ load_glprogram(char *vertexPath, char *fragmentPath, uint32 *program_id) {
 		print_error("failed to load vertex shader");
 		return false;
 	}
-	success = load_glshader(fragmentPath, GL_VERTEX_SHADER, &fragment_shader);
+	success = load_glshader(fragmentPath, GL_FRAGMENT_SHADER, &fragment_shader);
 	if (!success) {
 		print_error("failed to load fragment shader");
 		glDeleteShader(vertex_shader);
@@ -58,8 +58,8 @@ load_glprogram(char *vertexPath, char *fragmentPath, uint32 *program_id) {
 	glGetProgramiv(id, GL_LINK_STATUS, &success);
 	if (!success) {
 		char info[1024] = {0};
-		glGetShaderInfoLog(id, 1024, 0, info);
-		print_error("failed to create opengl program failed:\n%s", info);
+		glGetProgramInfoLog(id, 1024, 0, info);
+		print_error("failed to create opengl program, %s", info);
 		glDeleteShader(vertex_shader);
 		glDeleteShader(fragment_shader);
 		glDeleteProgram(id);
