@@ -1,8 +1,8 @@
 #!/bin/bash
 
- if [ "$1" = "web" ]; then
-	cd build/
-	python -m http.server
- else
-	./build/boids
- fi
+cd build/
+google-chrome http://localhost:8000/boids.html &
+python -m http.server
+
+
+

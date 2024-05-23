@@ -15,23 +15,10 @@ imgui_init(GLFWwindow* window) {
 }
 
 internal void
-imgui_main_menu() {
-	ImGui::BeginMainMenuBar();
-	if (ImGui::BeginMenu(title)) {
-		if (ImGui::MenuItem("Exit")) {
-			glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
-		}
-		ImGui::EndMenu();
-	}
-	ImGui::EndMainMenuBar();
-}
-
-internal void
 imgui_frame(Process *p) {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	imgui_main_menu();
 
 	// Process Context Window
 	ImGui::Begin("Process");
@@ -50,7 +37,6 @@ imgui_frame(Process *p) {
 	ImGui::SliderFloat("Radius", &p->boids_app.p.r, 0.0f, 500.0f);
 	ImGui::SliderFloat("Theta Max", &p->boids_app.p.theta_max, 0.0f, 3.14f);
 	ImGui::End();
-
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

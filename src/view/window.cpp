@@ -18,6 +18,15 @@ framebuffer_size_callback(GLFWwindow* window, int32 width, int32 height) {
 	glViewport(0, 0, width, height);
 }
 
+EM_BOOL
+resize_callback(int eventType, const EmscriptenUiEvent *e, void *userData) {
+	print("resize_callback");
+	float64 width, height;
+	emscripten_get_element_css_size("#canvas", &width, &height);
+	glfwSetWindowSize(PROCESS.ctx.window, width, height);
+	return EM_TRUE;
+}
+
 internal GLFWwindow *
 window_init() {
 	glfwSetErrorCallback(simple_error_callback);
@@ -49,6 +58,8 @@ window_init() {
 		return 0x0;
 	}
 
+	emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0x0,
+				       EM_FALSE, resize_callback);
 	return window;
 }
 

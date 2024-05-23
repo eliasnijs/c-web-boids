@@ -6,6 +6,8 @@ struct boid_t {
 	vec2 vel;
 };
 
+
+// TODO(Elias): update width and height parameters if the window resizes
 typedef struct param_t Param;
 struct param_t {
 	float32 r;
