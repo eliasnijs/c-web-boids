@@ -100,6 +100,9 @@ alignment(Boid *b, Boid *influencers[], int m, Param *p) {
 
 internal void
 update_boid(BoidsApplication *app, Boid *b) {
+	// BUG(Elias): Boids are going out of bounds on the right and top
+	// borders.
+
 	Boid *bs = app->bs;
 	Param *p = &app->p;
 	int32 n = app->n;

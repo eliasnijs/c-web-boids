@@ -20,7 +20,6 @@ framebuffer_size_callback(GLFWwindow* window, int32 width, int32 height) {
 
 EM_BOOL
 resize_callback(int eventType, const EmscriptenUiEvent *e, void *userData) {
-	print("resize_callback");
 	float64 width, height;
 	emscripten_get_element_css_size("#canvas", &width, &height);
 	glfwSetWindowSize(PROCESS.ctx.window, width, height);
@@ -39,6 +38,11 @@ window_init() {
 	/* glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); */
 	/* glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6); */
 
+	float64 width, height;
+	emscripten_get_element_css_size("#canvas", &width, &height);
+	window_width = (int32)width;
+	window_height = (int32)height;
+
 	GLFWwindow* window = glfwCreateWindow(window_width, window_height,
 					      title, NULL, NULL);
 
@@ -51,6 +55,8 @@ window_init() {
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0x0,
+				       EM_FALSE, resize_callback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		print_error("Failed to initialize GLAD");
@@ -58,8 +64,6 @@ window_init() {
 		return 0x0;
 	}
 
-	emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0x0,
-				       EM_FALSE, resize_callback);
 	return window;
 }
 

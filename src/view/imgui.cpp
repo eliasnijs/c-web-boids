@@ -20,6 +20,9 @@ imgui_frame(Process *p) {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
+	// TODO(Elias): Set start positions for panes (possible make them
+	// non-movable)
+
 	// Process Context Window
 	ImGui::Begin("Process");
 	ImGui::Text("Frame Time: %.3f ms | FPS: %.1f",

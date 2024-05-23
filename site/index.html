@@ -24,18 +24,14 @@ canvas {
 <body>
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type='text/javascript'>
+      var container = document.getElementById ("canvas");
       var Module = {
         canvas: (function() { return document.getElementById('canvas'); })()
       };
-
-      var container = document.getElementById ("canvas");
-      Module.canvas.width = container.clientWidth;
-      Module.canvas.height = container.clientHeight;
-      window.addEventListener ("resize", function (e) {
+      window.addEventListener ("resize", () => {
         Module.canvas.width = container.clientWidth;
         Module.canvas.height = container.clientHeight;
-      }, true);
-
+      });
     </script>
     {{{ SCRIPT }}}
 </body>
