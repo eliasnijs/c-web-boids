@@ -20,19 +20,14 @@ imgui_frame(Process *p) {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	// TODO(Elias): Set start positions for panes (possible make them
-	// non-movable)
-
-	// Process Context Window
-	ImGui::Begin("Process");
+	ImGui::SetNextWindowSize(ImVec2(500, 250));
+	ImGui::Begin("Controls", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+	ImGui::Text("Process Information");
 	ImGui::Text("Frame Time: %.3f ms | FPS: %.1f",
 		    p->ctx.frame_time * 1000.0f, p->ctx.fps);
-	ImGui::End();
-
-	// add controls for boid app
-	ImGui::Begin("Boids");
+	ImGui::Separator();
+	ImGui::Text("Boids controls");
 	ImGui::SliderInt("Number of Boids", &p->boids_app.n, 0, 1000);
-	// all param controls
 	ImGui::SliderFloat("Cohesion", &p->boids_app.p.c, 0.0f, 1.0f);
 	ImGui::SliderFloat("Separation", &p->boids_app.p.s, 0.0f, 1.0f);
 	ImGui::SliderFloat("Alignment", &p->boids_app.p.a, 0.0f, 1.0f);
