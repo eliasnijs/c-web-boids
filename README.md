@@ -11,4 +11,4 @@
 \
 **TODO:**
 1. Document required libraries.
-1. Implement a more robust rendering system, offloading more calculation to the gpu. This has been written in a quick and un-optimized manner at the moment.
+1. Implement a more robust rendering system, offloading more calculation to the gpu. This has been written in a quick and unoptimized manner at the moment.
