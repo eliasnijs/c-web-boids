@@ -33,13 +33,16 @@ push_data_to_gpu() {
 internal void
 render(GpuContext *gpu, BoidsApplication *app) {
 	// TODO(Elias): This is a temporary solution, is super inefficient
+	float32 w_factor = 2.0f / window_width;
+	float32 h_factor = 2.0f / window_height;
+
 	float32 data[MAX_BOIDS][5] = {};
 	for (int32 i = 0; i < app->n; i++) {
-		float32 r = Clamp(0.1, abs(app->bs[i].vel.x) / 2.0f, 1.0f);
+		float32 r = Clamp(0.3, abs(app->bs[i].vel.x) / 4.0f, 1.0f);
 		float32 g = 1.0;
-		float32 b = Clamp(0.1, abs(app->bs[i].vel.y) / 2.0f, 1.0f);
-		float32 x = app->bs[i].pos.x / 128.0f - 1.0f;
-		float32 y = app->bs[i].pos.y / 128.0f - 1.0f;
+		float32 b = Clamp(0.3, abs(app->bs[i].vel.y) / 4.0f, 1.0f);
+		float32 x = w_factor * app->bs[i].pos.x - 1.0f;
+		float32 y = h_factor * app->bs[i].pos.y - 1.0f;
 		float32 args[5] = {x, y, r, g, b};
 		memcpy(data[i], args, sizeof(args));
 	}

@@ -7,7 +7,6 @@ struct boid_t {
 };
 
 
-// TODO(Elias): update width and height parameters if the window resizes
 typedef struct param_t Param;
 struct param_t {
 	float32 r;
@@ -19,9 +18,6 @@ struct param_t {
 	float32 s;
 
 	float32 a;
-
-	int32 w;
-	int32 h;
 
 	float32 max_vel;
 };
@@ -121,12 +117,12 @@ update_boid(BoidsApplication *app, Boid *b) {
 
 	if (b->pos.x < 0) {
 		b->vel.x = Abs(b->vel.x);
-	} else if (b->pos.x > p->w) {
+	} else if (b->pos.x > window_width) {
 		b->vel.x = -Abs(b->vel.x);
 	}
 	if (b->pos.y < 0) {
 		b->vel.y = Abs(b->vel.y);
-	} else if (b->pos.y > p->h) {
+	} else if (b->pos.y > window_height) {
 		b->vel.y = -Abs(b->vel.y);
 	}
 }
@@ -140,8 +136,8 @@ update_boids(BoidsApplication *app) {
 
 internal void
 init_boid(Boid *b, Param *p) {
-	b->pos.x = rand() % p->w;
-	b->pos.y = rand() % p->h;
+	b->pos.x = rand() % window_width;
+	b->pos.y = rand() % window_height;
 	b->vel.x = (rand() % 100 - 50) / 50.0;
 	b->vel.y = (rand() % 100 - 50) / 50.0;
 }
@@ -157,8 +153,6 @@ init_boids_app(BoidsApplication *app) {
 	p->s = 0.1;
 	p->a = 0.1;
 	p->max_vel = 5;
-	p->w = window_width;
-	p->h = window_height;
 
 	app->bs = (Boid *)calloc(MAX_BOIDS, sizeof(Boid));
 	for (int32 i = 0; i < MAX_BOIDS; ++i) {
