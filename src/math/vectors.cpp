@@ -16,12 +16,12 @@ vec2_sub(vec2 a, vec2 b) {
 }
 
 internal vec2
-vec2_div(vec2 a, int s) {
+vec2_div(vec2 a, float32 s) {
 	return (vec2){ a.x / s, a.y / s };
 }
 
 internal vec2
-vec2_mul(vec2 a, int s) {
+vec2_mul(vec2 a, float32 s) {
 	return (vec2){ a.x * s, a.y * s };
 }
 

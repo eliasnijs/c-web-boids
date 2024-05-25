@@ -113,6 +113,7 @@ update_boid(BoidsApplication *app, Boid *b) {
 	b->vel.x = Clamp(-p->max_vel, b->vel.x, p->max_vel);
 	b->vel.y = Clamp(-p->max_vel, b->vel.y, p->max_vel);
 
+
 	b->pos = vec2_add(b->pos, b->vel);
 
 	if (b->pos.x < 0) {
@@ -125,6 +126,7 @@ update_boid(BoidsApplication *app, Boid *b) {
 	} else if (b->pos.y > window_height) {
 		b->vel.y = -Abs(b->vel.y);
 	}
+
 }
 
 internal void
