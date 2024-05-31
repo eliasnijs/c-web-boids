@@ -20,6 +20,7 @@ struct param_t {
 	float32 a;
 
 	float32 max_vel;
+	float32 size;
 };
 
 
@@ -28,14 +29,19 @@ struct boids_application_t {
 	Param p;
 	int32 n;
 	Boid *bs;
+	Boid *bs_swapbuffer;
 };
 
 internal bool8
 has_influence(Boid *b_j, Boid *b_i, Param *p) {
 	vec2 v_rel = vec2_sub(b_j->pos, b_i->pos);
-	return (vec2_mag(v_rel) < p->r)
-		&& (vec2_angle(b_i->vel, v_rel) < p->theta_max);
 
+	bool32 in_range = vec2_mag(v_rel) < p->r;
+	bool32 in_angle =
+		vec2_angle(b_i->vel, v_rel) < p->theta_max
+		|| vec2_angle(b_i->vel, v_rel) > (2*3.14) - p->theta_max;
+
+	return in_range && in_angle;
 }
 
 internal void
@@ -131,6 +137,8 @@ update_boid(BoidsApplication *app, Boid *b) {
 
 internal void
 update_boids(BoidsApplication *app) {
+	// TODO(Elias): use a swap buffer
+	// TODO(Elias): make this parallel
 	for (int32 i = 0; i < app->n; ++i) {
 		update_boid(app, &(app->bs[i]));
 	}
@@ -154,7 +162,8 @@ init_boids_app(BoidsApplication *app) {
 	p->s_r = 10;
 	p->s = 0.1;
 	p->a = 0.1;
-	p->max_vel = 5;
+	p->max_vel = 500;
+	p->size = 1.0f;
 
 	app->bs = (Boid *)calloc(MAX_BOIDS, sizeof(Boid));
 	for (int32 i = 0; i < MAX_BOIDS; ++i) {

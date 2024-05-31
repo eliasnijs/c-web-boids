@@ -28,6 +28,9 @@
 #include "view/shaders.cpp"
 #include "view/rendering.cpp"
 
+
+//TODO(Elias): Add the capability to add obstacles
+
 typedef struct process_ctx_t ProcessContext;
 struct process_ctx_t {
 	/* data */

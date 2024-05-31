@@ -32,24 +32,20 @@ push_data_to_gpu() {
 
 internal void
 render(GpuContext *gpu, BoidsApplication *app) {
-	// TODO(Elias): This is a temporary solution, is super inefficient
-	float32 w_factor = 2.0f / window_width;
-	float32 h_factor = 2.0f / window_height;
-
-	float32 data[MAX_BOIDS][5] = {};
-	for (int32 i = 0; i < app->n; i++) {
-		float32 r = Clamp(0.3, abs(app->bs[i].vel.x) / 4.0f, 1.0f);
-		float32 g = 1.0;
-		float32 b = Clamp(0.3, abs(app->bs[i].vel.y) / 4.0f, 1.0f);
-		float32 x = w_factor * app->bs[i].pos.x - 1.0f;
-		float32 y = h_factor * app->bs[i].pos.y - 1.0f;
-		float32 args[5] = {x, y, r, g, b};
-		memcpy(data[i], args, sizeof(args));
-	}
+	GLint u_window_width = glGetUniformLocation(gpu->boids_program,
+						    "u_window_width");
+	GLint u_window_height = glGetUniformLocation(gpu->boids_program,
+						     "u_window_height");
+	GLint u_point_size = glGetUniformLocation(gpu->boids_program,
+						  "u_point_size");
+	glUniform1f(u_window_width, window_width);
+	glUniform1f(u_window_height, window_height);
+	glUniform1f(u_point_size, app->p.size);
 
 	glBindVertexArray(gpu->boids_vao_id);
 	glBindBuffer(GL_ARRAY_BUFFER, gpu->boids_vbo_id);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, app->n * sizeof(Boid), app->bs,
+		     GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float32), (void *)0);
 	glEnableVertexAttribArray(0);
