@@ -33,8 +33,8 @@ imgui_frame(Process *p) {
 	ImGui::SliderFloat("Alignment", &p->boids_app.p.a, 0.0f, 1.0f);
 	ImGui::SliderFloat("Separation Radius", &p->boids_app.p.s_r, 0.0f, 100.0f);
 	ImGui::SliderFloat("Radius", &p->boids_app.p.r, 0.0f, 500.0f);
-	ImGui::SliderFloat("Theta Max", &p->boids_app.p.theta_max, 0.0f, 3.14f);
-	ImGui::SliderFloat("Max Velocity", &p->boids_app.p.max_vel, 0.0f, 1000.0f);
+	ImGui::SliderFloat("Theta Max", &p->boids_app.p.theta_max, 0.0f, 3.14f/2.0f);
+	ImGui::SliderFloat("Max Velocity", &p->boids_app.p.max_vel, 1.0f, 20.0f);
 	ImGui::SliderFloat("Point Size", &p->boids_app.p.size, 1.0f, 10.0f);
 	ImGui::End();
 

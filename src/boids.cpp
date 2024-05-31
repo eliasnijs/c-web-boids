@@ -35,13 +35,9 @@ struct boids_application_t {
 internal bool8
 has_influence(Boid *b_j, Boid *b_i, Param *p) {
 	vec2 v_rel = vec2_sub(b_j->pos, b_i->pos);
-
-	bool32 in_range = vec2_mag(v_rel) < p->r;
-	bool32 in_angle =
-		vec2_angle(b_i->vel, v_rel) < p->theta_max
-		|| vec2_angle(b_i->vel, v_rel) > (2*3.14) - p->theta_max;
-
-	return in_range && in_angle;
+	return vec2_mag(v_rel) < p->r
+		&& (vec2_angle(b_i->vel, v_rel) < p->theta_max
+		    || vec2_angle(b_i->vel, v_rel) > (2*3.14) - p->theta_max);
 }
 
 internal void
@@ -113,26 +109,24 @@ update_boid(BoidsApplication *app, Boid *b) {
 	int32 m;
 	get_influencers(b, bs, n, p, influencers, &m);
 
-	b->vel = vec2_add(b->vel, cohesion(b, influencers, m, p));
-	b->vel = vec2_add(b->vel, seperation(b, influencers, m, p));
-	b->vel = vec2_add(b->vel, alignment(b, influencers, m, p));
-	b->vel.x = Clamp(-p->max_vel, b->vel.x, p->max_vel);
-	b->vel.y = Clamp(-p->max_vel, b->vel.y, p->max_vel);
-
+	/* b->vel = vec2_add(b->vel, cohesion(b, influencers, m, p)); */
+	/* b->vel = vec2_add(b->vel, seperation(b, influencers, m, p)); */
+	/* b->vel = vec2_add(b->vel, alignment(b, influencers, m, p)); */
+	/* b->vel.x = Clamp(-p->max_vel, b->vel.x, p->max_vel); */
+	/* b->vel.y = Clamp(-p->max_vel, b->vel.y, p->max_vel); */
 
 	b->pos = vec2_add(b->pos, b->vel);
 
-	if (b->pos.x < 0) {
+	if (b->pos.x <= 0 + 100.0) {
 		b->vel.x = Abs(b->vel.x);
-	} else if (b->pos.x > window_width) {
+	} else if (b->pos.x > window_width - 100.0) {
 		b->vel.x = -Abs(b->vel.x);
 	}
-	if (b->pos.y < 0) {
+	if (b->pos.y <= 0 + 100.0) {
 		b->vel.y = Abs(b->vel.y);
-	} else if (b->pos.y > window_height) {
+	} else if (b->pos.y > window_height - 100.0) {
 		b->vel.y = -Abs(b->vel.y);
 	}
-
 }
 
 internal void
@@ -146,23 +140,24 @@ update_boids(BoidsApplication *app) {
 
 internal void
 init_boid(Boid *b, Param *p) {
-	b->pos.x = rand() % window_width;
-	b->pos.y = rand() % window_height;
-	b->vel.x = (rand() % 100 - 50) / 50.0;
-	b->vel.y = (rand() % 100 - 50) / 50.0;
+	b->pos.x = 500.0f; rand() % window_width;
+	b->pos.y = 500.0f; rand() % window_height;
+	b->vel.x = (rand() % 100 - 50) / 50.0f;
+	b->vel.y = (rand() % 100 - 50) / 50.0f;
+	printf("b->vel.x: %f, b->vel.y: %f\n", b->vel.x, b->vel.y);
 }
 
 internal void
 init_boids_app(BoidsApplication *app) {
 	Param *p = &app->p;
-	app->n = 100;
+	app->n = 800;
 	p->r = 50;
 	p->theta_max = 3.14 / 4;
 	p->c = 0.01;
 	p->s_r = 10;
 	p->s = 0.1;
 	p->a = 0.1;
-	p->max_vel = 500;
+	p->max_vel = 10.0;
 	p->size = 1.0f;
 
 	app->bs = (Boid *)calloc(MAX_BOIDS, sizeof(Boid));

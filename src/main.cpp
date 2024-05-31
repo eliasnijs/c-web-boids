@@ -28,8 +28,9 @@
 #include "view/shaders.cpp"
 #include "view/rendering.cpp"
 
+// TODO(Elias): !!!! Let boids be influenced by music !!!!
 
-//TODO(Elias): Add the capability to add obstacles
+// TODO(Elias): Add the capability to add obstacles
 
 typedef struct process_ctx_t ProcessContext;
 struct process_ctx_t {
