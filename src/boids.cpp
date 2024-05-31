@@ -1,4 +1,4 @@
-#define MAX_BOIDS 1000
+#define MAX_BOIDS 2000
 
 typedef struct boid_t Boid;
 struct boid_t {
@@ -109,22 +109,22 @@ update_boid(BoidsApplication *app, Boid *b) {
 	int32 m;
 	get_influencers(b, bs, n, p, influencers, &m);
 
-	/* b->vel = vec2_add(b->vel, cohesion(b, influencers, m, p)); */
-	/* b->vel = vec2_add(b->vel, seperation(b, influencers, m, p)); */
-	/* b->vel = vec2_add(b->vel, alignment(b, influencers, m, p)); */
-	/* b->vel.x = Clamp(-p->max_vel, b->vel.x, p->max_vel); */
-	/* b->vel.y = Clamp(-p->max_vel, b->vel.y, p->max_vel); */
+	b->vel = vec2_add(b->vel, cohesion(b, influencers, m, p));
+	b->vel = vec2_add(b->vel, seperation(b, influencers, m, p));
+	b->vel = vec2_add(b->vel, alignment(b, influencers, m, p));
+	b->vel.x = Clamp(-p->max_vel, b->vel.x, p->max_vel);
+	b->vel.y = Clamp(-p->max_vel, b->vel.y, p->max_vel);
 
 	b->pos = vec2_add(b->pos, b->vel);
 
-	if (b->pos.x <= 0 + 100.0) {
+	if (b->pos.x <= 0) {
 		b->vel.x = Abs(b->vel.x);
-	} else if (b->pos.x > window_width - 100.0) {
+	} else if (b->pos.x > window_width) {
 		b->vel.x = -Abs(b->vel.x);
 	}
-	if (b->pos.y <= 0 + 100.0) {
+	if (b->pos.y <= 0) {
 		b->vel.y = Abs(b->vel.y);
-	} else if (b->pos.y > window_height - 100.0) {
+	} else if (b->pos.y > window_height) {
 		b->vel.y = -Abs(b->vel.y);
 	}
 }
@@ -140,8 +140,8 @@ update_boids(BoidsApplication *app) {
 
 internal void
 init_boid(Boid *b, Param *p) {
-	b->pos.x = 500.0f; rand() % window_width;
-	b->pos.y = 500.0f; rand() % window_height;
+	b->pos.x = rand() % window_width;
+	b->pos.y = rand() % window_height;
 	b->vel.x = (rand() % 100 - 50) / 50.0f;
 	b->vel.y = (rand() % 100 - 50) / 50.0f;
 	printf("b->vel.x: %f, b->vel.y: %f\n", b->vel.x, b->vel.y);

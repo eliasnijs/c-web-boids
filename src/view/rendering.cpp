@@ -38,20 +38,20 @@ render(GpuContext *gpu, BoidsApplication *app) {
 						     "u_window_height");
 	GLint u_point_size = glGetUniformLocation(gpu->boids_program,
 						  "u_point_size");
-	glUniform1f(u_window_width, window_width);
-	glUniform1f(u_window_height, window_height);
-	glUniform1f(u_point_size, app->p.size);
 
 	glBindVertexArray(gpu->boids_vao_id);
 	glBindBuffer(GL_ARRAY_BUFFER, gpu->boids_vbo_id);
 	glBufferData(GL_ARRAY_BUFFER, app->n * sizeof(Boid), app->bs,
 		     GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float32), (void *)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float32), (void *)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float32), (void *)(2 * sizeof(float32)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float32), (void *)(2 * sizeof(float32)));
 	glEnableVertexAttribArray(1);
 
 	glUseProgram(gpu->boids_program);
+	glUniform1f(u_window_width, window_width);
+	glUniform1f(u_window_height, window_height);
+	glUniform1f(u_point_size, app->p.size);
 	glDrawArrays(GL_POINTS, 0, app->n);
 }
