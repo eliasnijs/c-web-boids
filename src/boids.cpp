@@ -29,7 +29,6 @@ struct boids_application_t {
 	Param p;
 	int32 n;
 	Boid *bs;
-	Boid *bs_swapbuffer;
 };
 
 internal bool8
@@ -53,7 +52,7 @@ get_influencers(Boid *b, Boid *bs, int n, Param *p,
 	*m = k;
 }
 
-internal vec2
+internal inline vec2
 cohesion(Boid *b, Boid *influencers[], int m, Param *p) {
 	vec2 v = {0, 0};
 	if (m == 0) {
@@ -68,7 +67,7 @@ cohesion(Boid *b, Boid *influencers[], int m, Param *p) {
 	return v;
 }
 
-internal vec2
+internal inline vec2
 seperation(Boid *b, Boid *influencers[], int m, Param *p) {
 	vec2 v = {0, 0};
 	for (int32 i = 0; i < m; ++i) {
@@ -81,7 +80,7 @@ seperation(Boid *b, Boid *influencers[], int m, Param *p) {
 	return v;
 }
 
-internal vec2
+internal inline vec2
 alignment(Boid *b, Boid *influencers[], int m, Param *p) {
 	vec2 v = {0, 0};
 	if (m == 0) {
@@ -133,6 +132,7 @@ internal void
 update_boids(BoidsApplication *app) {
 	// TODO(Elias): use a swap buffer
 	// TODO(Elias): make this parallel
+#pragma omp for parallel
 	for (int32 i = 0; i < app->n; ++i) {
 		update_boid(app, &(app->bs[i]));
 	}
