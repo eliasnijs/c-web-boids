@@ -1,0 +1,6 @@
+[submodule "libs/base"]
+	path = libs/base
+	url = git@github.com:eliasnijs/c-base.git
+[submodule "libs/imgui"]
+	path = libs/imgui
+	url = git@github.com:ocornut/imgui.git

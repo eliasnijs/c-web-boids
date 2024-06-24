@@ -1,4 +1,5 @@
 #!/bin/sh
+
 rm -r build
 mkdir -p build
 
@@ -13,7 +14,7 @@ FILES="${FILES} --preload-file src/view/shaders/boids.fragment.glsl"
 
 # includes and libs
 INCS="${INCS} -I libs/base -I libs/glad -I libs/imgui"
-LIBS="-lm -lGL -lpthread -lglfw -L libs/imgui/build/ -limgui"
+LIBS="-lm -lGL -lpthread -lglfw -L libs/imgui/ -limgui"
 
 # flags
 EMFLAGS="-s USE_GLFW=3 -s FULL_ES3=1 -s USE_WEBGL2=1 -DPLATFORM_WEB"
@@ -28,3 +29,4 @@ echo "[build.sh]# building $NAME"
 echo ${CC} $CFLAGS ${EMFLAGS} ${FILES} -o "build/$NAME" $SOURCE $LIBS $SET_FRONTEND_TEMPLATE
 ${CC} $CFLAGS ${EMFLAGS} ${FILES} -o "build/$NAME" $SOURCE $LIBS $SET_FRONTEND_TEMPLATE
 echo "[build.sh]# finished building"
+
