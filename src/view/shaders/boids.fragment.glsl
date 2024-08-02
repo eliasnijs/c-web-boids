@@ -14,5 +14,5 @@ void main() {
     float g = 2.0 - abs(hue * 6.0 - 2.0);
     float b = 2.0 - abs(hue * 6.0 - 4.0);
 
-    out_color = mix(texture(tex, v_uv), vec4(r, g, b, 1.0), 0.0);
+    out_color = mix(texture(tex, v_uv), vec4(r, g, b, 1.0), 0.5);
 }

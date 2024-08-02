@@ -6,7 +6,9 @@ mkdir -p build
 SOURCE="src/main.cpp"
 NAME="boids.html"
 VERSION="00"
-CONFIG="-DNO_CONTROL_PANEL"
+
+CONFIG=""
+# CONFIG="${CONFIG} -DNO_CONTROL_PANEL"
 
 
 # files

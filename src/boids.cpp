@@ -154,7 +154,7 @@ init_boids_app(BoidsApplication *app) {
 	p->s = 0.1;
 	p->a = 0.1;
 	p->max_vel = 10.0;
-	p->size = 2.0f;
+	p->size = 1.0f;
 
 	app->bs = (Boid *)calloc(MAX_BOIDS, sizeof(Boid));
 	for (int32 i = 0; i < MAX_BOIDS; ++i) {
