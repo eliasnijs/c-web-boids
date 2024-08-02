@@ -6,6 +6,8 @@ mkdir -p build
 SOURCE="src/main.cpp"
 NAME="boids.html"
 VERSION="00"
+CONFIG="-DSHOW_UI=0"
+
 
 # files
 SET_FRONTEND_TEMPLATE="--shell-file site/index.html"

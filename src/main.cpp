@@ -71,7 +71,10 @@ frame() {
 	update_boids(&p->boids_app);
 	render(&p->gpu, &p->boids_app);
 
+#if SHOW_UI
 	imgui_frame(p);
+#endif
+
 	glfwSwapBuffers(p->ctx.window);
 
 	p->ctx.frame_time = glfwGetTime() - start_time;
