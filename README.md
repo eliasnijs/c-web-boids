@@ -18,7 +18,7 @@ Install the dependencies with the following commands:
 
 ```bash
 cd libs 
-./buildlibs.sh
+./buildlibs.sh all
 cd ..
 ```
 
