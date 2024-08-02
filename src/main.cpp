@@ -13,6 +13,7 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <stb_image.h>
 
 #define ENABLE_ASSERT 1
 #define ENABLE_DEBUGLOG 1
@@ -26,6 +27,7 @@
 #include "boids.cpp"
 
 #include "view/shaders.cpp"
+#include "view/textures.cpp"
 #include "view/rendering.cpp"
 
 // TODO(Elias): !!!! Let boids be influenced by music !!!!
@@ -62,7 +64,7 @@ frame() {
 	Process *p = &PROCESS;
 	float64 start_time = glfwGetTime();
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glfwPollEvents();
@@ -71,9 +73,7 @@ frame() {
 	update_boids(&p->boids_app);
 	render(&p->gpu, &p->boids_app);
 
-#if SHOW_UI
 	imgui_frame(p);
-#endif
 
 	glfwSwapBuffers(p->ctx.window);
 

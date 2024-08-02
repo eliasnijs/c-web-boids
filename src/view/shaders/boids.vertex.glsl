@@ -9,11 +9,13 @@ uniform float u_window_height;
 uniform float u_point_size;
 
 out vec2 v_vel;
+out vec2 v_uv;
 
 void main() {
 	gl_PointSize = u_point_size;
-        float x = (a_position.x / u_window_width) * 2.0 - 1.0;
-        float y = (a_position.y / u_window_height) * 2.0 - 1.0;
-        gl_Position = vec4(x, -y, 0.0, 1.0);
+  float x = (a_position.x / u_window_width) * 2.0 - 1.0;
+  float y = (a_position.y / u_window_height) * 2.0 - 1.0;
+  gl_Position = vec4(x, -y, 0.0, 1.0);
+  v_uv = a_position / vec2(u_window_width, u_window_height);
 	v_vel = a_vel;
 }

@@ -130,9 +130,6 @@ update_boid(BoidsApplication *app, Boid *b) {
 
 internal void
 update_boids(BoidsApplication *app) {
-	// TODO(Elias): use a swap buffer
-	// TODO(Elias): make this parallel
-#pragma omp for parallel
 	for (int32 i = 0; i < app->n; ++i) {
 		update_boid(app, &(app->bs[i]));
 	}
@@ -144,21 +141,20 @@ init_boid(Boid *b, Param *p) {
 	b->pos.y = rand() % window_height;
 	b->vel.x = (rand() % 100 - 50) / 50.0f;
 	b->vel.y = (rand() % 100 - 50) / 50.0f;
-	printf("b->vel.x: %f, b->vel.y: %f\n", b->vel.x, b->vel.y);
 }
 
 internal void
 init_boids_app(BoidsApplication *app) {
 	Param *p = &app->p;
-	app->n = 800;
+	app->n = 2000;
 	p->r = 50;
-	p->theta_max = 3.14 / 4;
+	p->theta_max = 3.14 / 5;
 	p->c = 0.01;
 	p->s_r = 10;
 	p->s = 0.1;
 	p->a = 0.1;
 	p->max_vel = 10.0;
-	p->size = 1.0f;
+	p->size = 2.0f;
 
 	app->bs = (Boid *)calloc(MAX_BOIDS, sizeof(Boid));
 	for (int32 i = 0; i < MAX_BOIDS; ++i) {

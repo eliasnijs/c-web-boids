@@ -20,13 +20,16 @@ imgui_frame(Process *p) {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::SetNextWindowSize(ImVec2(500, 300));
-	ImGui::Begin("Controls", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-	ImGui::Text("Process Information");
+	uint32 margin = 10;
+	ImGui::SetNextWindowSize(ImVec2(300, 50));
+	ImGui::SetNextWindowPos(ImVec2(window_width - 300 - margin,
+				       window_height - 50 - margin));
+	ImGui::Begin("Process Information", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 	ImGui::Text("Frame Time: %.3f ms | FPS: %.1f",
 		    p->ctx.frame_time * 1000.0f, p->ctx.fps);
-	ImGui::Separator();
-	ImGui::Text("Boids controls");
+	ImGui::End();
+#ifndef NO_CONTROL_PANEL
+	ImGui::Begin("Controls", NULL, ImGuiWindowFlags_NoCollapse);
 	ImGui::SliderInt("Number of Boids", &p->boids_app.n, 0, MAX_BOIDS);
 	ImGui::SliderFloat("Cohesion", &p->boids_app.p.c, 0.0f, 1.0f);
 	ImGui::SliderFloat("Separation", &p->boids_app.p.s, 0.0f, 1.0f);
@@ -37,6 +40,7 @@ imgui_frame(Process *p) {
 	ImGui::SliderFloat("Max Velocity", &p->boids_app.p.max_vel, 1.0f, 20.0f);
 	ImGui::SliderFloat("Point Size", &p->boids_app.p.size, 1.0f, 10.0f);
 	ImGui::End();
+#endif
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
