@@ -13,8 +13,6 @@ simple_error_callback(int32 error, const char* description) {
 
 internal void
 framebuffer_size_callback(GLFWwindow* window, int32 width, int32 height) {
-	window_width = width;
-	window_height = height;
 	glViewport(0, 0, width, height);
 }
 
@@ -40,11 +38,7 @@ window_init() {
 
 	float64 width, height;
 	emscripten_get_element_css_size("#canvas", &width, &height);
-	window_width = (int32)width;
-	window_height = (int32)height;
-
-	GLFWwindow* window = glfwCreateWindow(window_width, window_height,
-					      title, NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
 
 	if (!window) {
 		print_error("Failed to create window");

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #include <glad.h>
 #include <glad.c>
@@ -22,9 +23,11 @@
 
 #include "config.h"
 #include "utils/files.cpp"
+#include "utils/arena.cpp"
 #include "math/vectors.cpp"
-
 #include "boids.cpp"
+#include "quadtree.c"
+
 
 #include "view/shaders.cpp"
 #include "view/textures.cpp"
@@ -52,6 +55,7 @@ struct process_t {
 	ProcessContext		ctx;
 	GpuContext		gpu;
 	BoidsApplication	boids_app;
+	Arena			frame_arena;
 };
 
 global_variable Process PROCESS = {};
@@ -70,7 +74,23 @@ frame() {
 	glfwPollEvents();
 	handle_input(p->ctx.window);
 
+	int width, height;
+	glfwGetFramebufferSize(p->ctx.window, &width, &height);
+	p->boids_app.p.width  = width;
+	p->boids_app.p.height = height;
+
+	// add to quad tree
+
+	QuadTree *T = {0};
+	qt_init(T, 2000);
+	for (int32 i = 0; i < 1; ++i) {
+		qt_insert(T, i, p->boids_app.bs, &p->frame_arena);
+	}
+
+	// rende quad tree
+
 	update_boids(&p->boids_app);
+
 	render(&p->gpu, &p->boids_app);
 
 	imgui_frame(p);
@@ -93,6 +113,11 @@ main() {
 	/* initialisation */
 	PROCESS.ctx.window = window;
 	PROCESS.ctx.max_fps = 60.0f;
+
+	uint64 bufferl = 10LL * 1024LL * 1024LL;
+	char *buffer = (char *)malloc(bufferl);
+	arena_init(&PROCESS.frame_arena, buffer, bufferl);
+
 	init_boids_app(&PROCESS.boids_app);
 	if (!gpu_init(&PROCESS.gpu)) {
 		print_error("Failed to initialize gpu");

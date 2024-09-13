@@ -21,6 +21,9 @@ struct param_t {
 
 	float32 max_vel;
 	float32 size;
+
+	int32   width;
+	int32   height;
 };
 
 
@@ -118,18 +121,19 @@ update_boid(BoidsApplication *app, Boid *b) {
 
 	if (b->pos.x <= 0) {
 		b->vel.x = Abs(b->vel.x);
-	} else if (b->pos.x > window_width) {
+	} else if (b->pos.x > Min(p->width, p->height)) {
 		b->vel.x = -Abs(b->vel.x);
 	}
 	if (b->pos.y <= 0) {
 		b->vel.y = Abs(b->vel.y);
-	} else if (b->pos.y > window_height) {
+	} else if (b->pos.y > Min(p->width, p->height)) {
 		b->vel.y = -Abs(b->vel.y);
 	}
 }
 
 internal void
 update_boids(BoidsApplication *app) {
+	// ... update the tree
 	for (int32 i = 0; i < app->n; ++i) {
 		update_boid(app, &(app->bs[i]));
 	}
@@ -137,8 +141,8 @@ update_boids(BoidsApplication *app) {
 
 internal void
 init_boid(Boid *b, Param *p) {
-	b->pos.x = rand() % window_width;
-	b->pos.y = rand() % window_height;
+	b->pos.x = rand() % p->width;
+	b->pos.y = rand() % p->height;
 	b->vel.x = (rand() % 100 - 50) / 50.0f;
 	b->vel.y = (rand() % 100 - 50) / 50.0f;
 }
@@ -146,15 +150,17 @@ init_boid(Boid *b, Param *p) {
 internal void
 init_boids_app(BoidsApplication *app) {
 	Param *p = &app->p;
-	app->n = 2000;
-	p->r = 50;
-	p->theta_max = 3.14 / 5;
-	p->c = 0.01;
-	p->s_r = 10;
-	p->s = 0.1;
-	p->a = 0.1;
-	p->max_vel = 10.0;
-	p->size = 1.0f;
+	app->n		= 1000;
+	p->r		= 50;
+	p->theta_max	= 3.14 / 5;
+	p->c		= 0.01;
+	p->s_r		= 10;
+	p->s		= 0.1;
+	p->a		= 0.1;
+	p->max_vel	= 10.0;
+	p->size		= 1.0f;
+	p->width	= 800;
+	p->height	= 600;
 
 	app->bs = (Boid *)calloc(MAX_BOIDS, sizeof(Boid));
 	for (int32 i = 0; i < MAX_BOIDS; ++i) {

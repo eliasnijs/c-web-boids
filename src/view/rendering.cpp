@@ -58,8 +58,8 @@ render(GpuContext *gpu, BoidsApplication *app) {
 
 	glUseProgram(gpu->boids_program);
 	use_texture(&gpu->tex, 0);
-	glUniform1f(u_window_width, window_width);
-	glUniform1f(u_window_height, window_height);
+	glUniform1f(u_window_width, app->p.width);
+	glUniform1f(u_window_height,app->p.height);
 	glUniform1f(u_point_size, app->p.size);
 	glDrawArrays(GL_POINTS, 0, app->n);
 }

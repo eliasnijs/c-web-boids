@@ -45,3 +45,15 @@ vec2_dist(vec2 a, vec2 b) {
 	return vec2_mag(vec2_sub(a, b));
 }
 
+
+struct int16v2 {
+	int16 x;
+	int16 y;
+};
+
+internal int16v2
+int16v2_n(int16 x, int16 y) {
+	return {x, y};
+}
+
+

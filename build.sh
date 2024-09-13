@@ -25,6 +25,7 @@ LIBS="-L ./libs/archives -lm -lGL -lpthread -lglfw -limgui -lstb"
 EMFLAGS="-s USE_GLFW=3 -s FULL_ES3=1 -s USE_WEBGL2=1 -DPLATFORM_WEB -s MAXIMUM_MEMORY=1GB -s ALLOW_MEMORY_GROWTH"
 CPPFLAGS="${CPPFLAGS} -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=2 -DVERSION=\"${VERSION}\""
 CFLAGS="${CFLAGS} -g -Wall -Wno-deprecated-declarations -Wno-write-strings -Wno-writable-strings -Wno-unused-function -O3 ${INCS} ${CPPFLAGS}"
+# CFLAGS="${CFLAGS} -g -Wall -Wno-deprecated-declarations -Wno-write-strings -Wno-writable-strings -Wno-unused-function ${INCS} ${CPPFLAGS}"
 
 # compiler
 CC="em++"
