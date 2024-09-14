@@ -63,33 +63,41 @@ global_variable Process PROCESS = {};
 #include "view/window.cpp"
 #include "view/imgui.cpp"
 
+global_variable bool32 finished = false;
+
 internal void
 frame() {
+
 	Process *p = &PROCESS;
 	float64 start_time = glfwGetTime();
+
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	arena_reset(&p->frame_arena);
+
 	glfwPollEvents();
 	handle_input(p->ctx.window);
 
-	int width, height;
-	glfwGetFramebufferSize(p->ctx.window, &width, &height);
-	p->boids_app.p.width  = width;
-	p->boids_app.p.height = height;
+	if (!finished) {
+		int width, height;
+		glfwGetFramebufferSize(p->ctx.window, &width, &height);
+		p->boids_app.p.width  = width;
+		p->boids_app.p.height = height;
 
-	// add to quad tree
+		// add to quad tree
 
-	QuadTree *T = {0};
-	qt_init(T, 2000);
-	for (int32 i = 0; i < 1; ++i) {
-		qt_insert(T, i, p->boids_app.bs, &p->frame_arena);
+		QuadTree T = {};
+		qt_init(&T, Min(width, height), &p->frame_arena);
+		for (int32 i = 0; i < p->boids_app.n; ++i) {
+			qt_insert(&T, i, p->boids_app.bs, &p->frame_arena);
+		}
+
+		finished = true;
+		// render quad tree
+		/* update_boids(&p->boids_app); */
 	}
-
-	// rende quad tree
-
-	update_boids(&p->boids_app);
 
 	render(&p->gpu, &p->boids_app);
 
@@ -99,6 +107,7 @@ frame() {
 
 	p->ctx.frame_time = glfwGetTime() - start_time;
 	p->ctx.fps = 1.0f / p->ctx.frame_time;
+
 }
 
 int32

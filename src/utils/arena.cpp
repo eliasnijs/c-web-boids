@@ -85,9 +85,7 @@ arena_reset(Arena *a) {
 /* IMPORTANT(Elias): memory is not guaranteed to be 0! */
 internal void *
 arena_alloc_align(Arena *a, uint64 len, uint64 align) {
-	printf("allocating %lu bytes in arena (full? %d)\n", len, a->offset_curr + len > a->len);
 	if (a->len < a->offset_curr + len) {
-		printf("allocating %lu bytes in arena (full? %d)\n", len, a->offset_curr + len > a->len);
 		fprintf(stderr, "error: arena out of memory, allocation failed\n");
 		return 0x0;
 	}
