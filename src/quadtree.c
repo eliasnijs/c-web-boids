@@ -26,11 +26,11 @@ struct CTU {
 
 	CTU_State state;
 
-	uint32     n;
 	union {
 		CTU *children;
 		struct {
 			uint32 capacity;
+			uint32 n;
 			uint32 *indices;
 		};
 	};
@@ -50,11 +50,12 @@ struct Square {
 
 internal Quadrant
 get_quadrant(vec2 o, int16 size, vec2 pos) {
-	int16 m = o.x + size / 2;
-	if (pos.x >= m) {
-		return (pos.y >= m) ? QUADRANT_NE : QUADRANT_SE;
+	int16 mx = o.x + size / 2;
+	int16 my = o.y + size / 2;
+	if (pos.x >= mx) {
+		return (pos.y >= my) ? QUADRANT_NE : QUADRANT_SE;
 	} else {
-		return (pos.y >= m) ? QUADRANT_NW : QUADRANT_SW;
+		return (pos.y >= my) ? QUADRANT_NW : QUADRANT_SW;
 	}
 }
 
@@ -106,19 +107,20 @@ qt_insert(QuadTree *t, int32 index, Boid *bs, Arena *a) {
 					children[i].size     = m_;
 					children[i].state    = CTU_LEAF;
 					children[i].n        = 0;
-					children[i].capacity = 4;
-					children[i].indices  = (uint32 *)arena_alloc(a, (uint32)(sizeof(int32) * 4));
+					children[i].capacity = MAX_PER_CTU;
+					children[i].indices  = (uint32 *)arena_alloc(a, (uint32)(sizeof(int32) * MAX_PER_CTU));
 				}
 				children[QUADRANT_NE].o = {node->o.x + m_, node->o.y + m_};
 				children[QUADRANT_SE].o = {node->o.x + m_, node->o.y};
-				children[QUADRANT_SW].o = {node->o.x, node->o.y};
 				children[QUADRANT_NW].o = {node->o.x, node->o.y + m_};
+				children[QUADRANT_SW].o = {node->o.x, node->o.y};
 
-				for (int32 i = 0; i < 1; ++i) {
-					vec2 pos_  = bs[i].pos;
-					Quadrant q = get_quadrant(node->o, node->size, pos_);
+				for (int32 i = 0; i < node->n; ++i) {
+					int32 index_ = node->indices[i];
+					Quadrant q = get_quadrant(node->o, node->size,
+								  bs[index_].pos);
 					CTU *child = &children[q];
-					child->indices[child->n++] = node->indices[i];
+					child->indices[child->n++] = index_;
 				}
 
 				node->children = children;
