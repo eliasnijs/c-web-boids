@@ -19,3 +19,4 @@ void main() {
   v_uv = a_position / vec2(u_window_width, u_window_height);
 	v_vel = a_vel;
 }
+

@@ -63,8 +63,6 @@ global_variable Process PROCESS = {};
 #include "view/window.cpp"
 #include "view/imgui.cpp"
 
-global_variable bool32 finished = false;
-
 internal void
 frame() {
 
@@ -80,26 +78,23 @@ frame() {
 	glfwPollEvents();
 	handle_input(p->ctx.window);
 
-	if (!finished) {
-		int width, height;
-		glfwGetFramebufferSize(p->ctx.window, &width, &height);
-		p->boids_app.p.width  = width;
-		p->boids_app.p.height = height;
+	QuadTree T = {};
 
-		// add to quad tree
+	int width, height;
+	glfwGetFramebufferSize(p->ctx.window, &width, &height);
+	/* p->boids_app.p.width  = width; */
+	/* p->boids_app.p.height = height; */
 
-		QuadTree T = {};
-		qt_init(&T, Min(width, height), &p->frame_arena);
-		for (int32 i = 0; i < p->boids_app.n; ++i) {
-			qt_insert(&T, i, p->boids_app.bs, &p->frame_arena);
-		}
+	qt_init(&T, Max(p->boids_app.p.width, p->boids_app.p.height), &p->frame_arena);
 
-		finished = true;
-		// render quad tree
-		/* update_boids(&p->boids_app); */
+	for (int32 i = 0; i < p->boids_app.n; ++i) {
+		qt_insert(&T, i, p->boids_app.bs, &p->frame_arena);
 	}
 
-	render(&p->gpu, &p->boids_app);
+	// render quad tree
+	update_boids(&p->boids_app);
+
+	render(&p->gpu, &p->boids_app, &T, &p->frame_arena);
 
 	imgui_frame(p);
 

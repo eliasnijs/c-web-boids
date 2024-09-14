@@ -15,6 +15,8 @@ CONFIG=""
 SET_FRONTEND_TEMPLATE="--shell-file site/index.html"
 FILES="${FILES} --preload-file src/view/shaders/boids.vertex.glsl"
 FILES="${FILES} --preload-file src/view/shaders/boids.fragment.glsl"
+FILES="${FILES} --preload-file src/view/shaders/CTU.vertex.glsl"
+FILES="${FILES} --preload-file src/view/shaders/CTU.fragment.glsl"
 FILES="${FILES} --preload-file res/texture.jpeg"
 
 # includes and libs

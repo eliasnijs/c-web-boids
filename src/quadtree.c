@@ -1,5 +1,5 @@
 
-#define MAX_DEPTH   8  // TODO(Elias): set based on boids range
+#define MAX_DEPTH   8 // TODO(Elias): set based on boids range
 #define MAX_PER_CTU 4
 
 enum Quadrant {
@@ -21,8 +21,8 @@ enum CTU_State {
 };
 
 struct CTU {
-	int16v2	  o;
-	int16v2	  size;
+	vec2	  o;
+	int16	  size;
 
 	CTU_State state;
 
@@ -40,18 +40,21 @@ struct QuadTree {
 	CTU	root;
 };
 
+struct Square {
+    vec2    origin;
+    float32 size;
+};
+
 /////////////////////////////////////////////////////////////////////
 //// Utility functions
 
 internal Quadrant
-get_quadrant(int16v2 o, int16v2 size, vec2 pos) {
-	int16 mx = o.x + size.x / 2;
-	int16 my = o.y + size.y / 2;
-
-	if (pos.x >= mx) {
-		return (pos.y >= my) ? QUADRANT_NE : QUADRANT_SE;
+get_quadrant(vec2 o, int16 size, vec2 pos) {
+	int16 m = o.x + size / 2;
+	if (pos.x >= m) {
+		return (pos.y >= m) ? QUADRANT_NE : QUADRANT_SE;
 	} else {
-		return (pos.y >= my) ? QUADRANT_NW : QUADRANT_SW;
+		return (pos.y >= m) ? QUADRANT_NW : QUADRANT_SW;
 	}
 }
 
@@ -64,8 +67,8 @@ internal void
 qt_init(QuadTree *t, int16 size, Arena *a) {
 	CTU *root = &t->root;
 	root->state	= CTU_LEAF;
-	root->o		= int16v2_n(0, 0);
-	root->size	= int16v2_n(size, size);
+	root->o		= {0, 0};
+	root->size	= size;
 	root->n		= 0;
 	root->capacity	= 4;
 	root->indices	= (uint32 *)arena_alloc(a, (uint64)(sizeof(uint32) * 4));
@@ -77,10 +80,8 @@ qt_insert(QuadTree *t, int32 index, Boid *bs, Arena *a) {
 	int32 depth = 0;
 
 	bool32 traversing = 1;
-	printf("INSERTING (x=%3.0f, y=%3.0f, index=%d)\n", bs[index].pos.x, bs[index].pos.y, index);
 	while (traversing) {
 		if (depth == MAX_DEPTH) {
-			printf("At max depth leaf (depth=%d)\n", depth);
 			if (node->capacity == node->n) {
 				uint32 *old_indices = node->indices;
 				node->capacity = node->capacity * 2;
@@ -93,36 +94,30 @@ qt_insert(QuadTree *t, int32 index, Boid *bs, Arena *a) {
 			return true;
 		}
 		if (node->state == CTU_LEAF) {
-			printf("At non-max-depth leaf (depth=%d)\n", depth);
 			if (node->n < 4) {
-				printf("  Adding into leaf\n");
 				node->indices[node->n] = index;
 				node->n++;
 				return true;
 			} else {
-				printf("  splitting needed\n");
-				int16 mx = node->size.x / 2;
-				int16 my = node->size.y / 2;
+				int16 m_ = node->size / 2;
 
 				CTU *children = (CTU *)arena_alloc(a, (uint64)(4 * sizeof(CTU)));
 				for (int32 i = 0; i < 4; ++i) {
-					children[i].size     = int16v2_n(mx, my);
+					children[i].size     = m_;
 					children[i].state    = CTU_LEAF;
 					children[i].n        = 0;
 					children[i].capacity = 4;
 					children[i].indices  = (uint32 *)arena_alloc(a, (uint32)(sizeof(int32) * 4));
 				}
-				children[QUADRANT_NE].o = int16v2_n(node->o.x + mx, node->o.y + my);
-				children[QUADRANT_SE].o = int16v2_n(node->o.x + mx, node->o.y);
-				children[QUADRANT_SW].o = int16v2_n(node->o.x, node->o.y);
-				children[QUADRANT_NW].o = int16v2_n(node->o.x, node->o.y + my);
+				children[QUADRANT_NE].o = {node->o.x + m_, node->o.y + m_};
+				children[QUADRANT_SE].o = {node->o.x + m_, node->o.y};
+				children[QUADRANT_SW].o = {node->o.x, node->o.y};
+				children[QUADRANT_NW].o = {node->o.x, node->o.y + m_};
 
 				for (int32 i = 0; i < 1; ++i) {
 					vec2 pos_  = bs[i].pos;
 					Quadrant q = get_quadrant(node->o, node->size, pos_);
 					CTU *child = &children[q];
-					printf("adding (%3.0f, %3.0f) to %s\n",
-					       pos_.x, pos_.y, QUADRANT_STRING_TABLE[q]);
 					child->indices[child->n++] = node->indices[i];
 				}
 
@@ -139,8 +134,6 @@ qt_insert(QuadTree *t, int32 index, Boid *bs, Arena *a) {
 
 	return false;
 }
-
-
 
 
 
