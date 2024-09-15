@@ -25,8 +25,9 @@
 #include "utils/files.cpp"
 #include "utils/arena.cpp"
 #include "math/vectors.cpp"
-#include "boids.cpp"
+#include "boids.h"
 #include "quadtree.c"
+#include "boids.cpp"
 
 
 #include "view/shaders.cpp"
@@ -56,6 +57,7 @@ struct process_t {
 	GpuContext		gpu;
 	BoidsApplication	boids_app;
 	Arena			frame_arena;
+	bool32			showtree;
 };
 
 global_variable Process PROCESS = {};
@@ -91,10 +93,9 @@ frame() {
 		qt_insert(&T, i, p->boids_app.bs, &p->frame_arena);
 	}
 
-	// render quad tree
-	/* update_boids(&p->boids_app); */
+	update_boids(&p->boids_app, &T);
 
-	render(&p->gpu, &p->boids_app, &T, &p->frame_arena);
+	render(&p->gpu, &p->boids_app, &T, p->showtree, &p->frame_arena);
 
 	imgui_frame(p);
 
@@ -118,7 +119,7 @@ main() {
 	PROCESS.ctx.window = window;
 	PROCESS.ctx.max_fps = 60.0f;
 
-	uint64 bufferl = 10LL * 1024LL * 1024LL;
+	uint64 bufferl = 100LL * 1024LL;
 	char *buffer = (char *)malloc(bufferl);
 	arena_init(&PROCESS.frame_arena, buffer, bufferl);
 

@@ -36,6 +36,11 @@ vec2_mag(vec2 a) {
 }
 
 internal float32
+vec2_mag_sq(vec2 a) {
+	return a.x*a.x + a.y*a.y;
+}
+
+internal float32
 vec2_angle(vec2 a, vec2 b) {
 	return acos(vec2_dot(a, b) / (vec2_mag(a) * vec2_mag(b)));
 }
@@ -43,6 +48,11 @@ vec2_angle(vec2 a, vec2 b) {
 internal float32
 vec2_dist(vec2 a, vec2 b) {
 	return vec2_mag(vec2_sub(a, b));
+}
+
+internal float32
+vec2_dist_sq(vec2 a, vec2 b) {
+	return vec2_mag_sq(vec2_sub(a, b));
 }
 
 

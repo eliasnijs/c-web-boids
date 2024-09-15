@@ -71,9 +71,8 @@ global_variable float32 BoxGeometry[] = {
     0.0f, 1.0f
 };
 
-#define SHOW_TREE 1
 internal void
-render(GpuContext *gpu, BoidsApplication *app, QuadTree *T, Arena *a) {
+render(GpuContext *gpu, BoidsApplication *app, QuadTree *T, bool32 showtree, Arena *a) {
 	GLint u_window_width  = glGetUniformLocation(gpu->boids_program, "u_window_width" );
 	GLint u_window_height = glGetUniformLocation(gpu->boids_program, "u_window_height");
 	GLint u_point_size    = glGetUniformLocation(gpu->boids_program, "u_point_size"   );
@@ -94,21 +93,21 @@ render(GpuContext *gpu, BoidsApplication *app, QuadTree *T, Arena *a) {
 	glUniform1f(u_point_size, app->p.size);
 	glDrawArrays(GL_POINTS, 0, app->n);
 
-#ifdef SHOW_TREE
-	GLint u_window_size	= glGetUniformLocation(gpu->CTU_program, "u_window_size");
-	GLint u_origin		= glGetUniformLocation(gpu->CTU_program, "u_origin" );
-	GLint u_size		= glGetUniformLocation(gpu->CTU_program, "u_size");
+	if (showtree) {
+		GLint u_window_size	= glGetUniformLocation(gpu->CTU_program, "u_window_size");
+		GLint u_origin		= glGetUniformLocation(gpu->CTU_program, "u_origin" );
+		GLint u_size		= glGetUniformLocation(gpu->CTU_program, "u_size");
 
-	glBindVertexArray(gpu->CTU_vao_id);
-	glBindBuffer(GL_ARRAY_BUFFER, gpu->CTU_vbo_id);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(BoxGeometry), BoxGeometry, GL_STATIC_DRAW);
+		glBindVertexArray(gpu->CTU_vao_id);
+		glBindBuffer(GL_ARRAY_BUFFER, gpu->CTU_vbo_id);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(BoxGeometry), BoxGeometry, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float32), (void*)0);
-	glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float32), (void*)0);
+		glEnableVertexAttribArray(0);
 
-	glUseProgram(gpu->CTU_program);
-        glUniform2f(u_window_size, app->p.width, app->p.height);
-	glUseProgram(gpu->CTU_program);
-	qt_render(&T->root, u_origin, u_size);
-#endif
+		glUseProgram(gpu->CTU_program);
+		glUniform2f(u_window_size, app->p.width, app->p.height);
+		glUseProgram(gpu->CTU_program);
+		qt_render(&T->root, u_origin, u_size);
+	}
 }

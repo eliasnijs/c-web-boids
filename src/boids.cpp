@@ -1,121 +1,81 @@
-#define MAX_BOIDS 2000
-
-typedef struct boid_t Boid;
-struct boid_t {
-	vec2 pos;
-	vec2 vel;
-};
-
-
-typedef struct param_t Param;
-struct param_t {
-	float32 r;
-	float32 theta_max;
-
-	float32 c;
-
-	float32 s_r;
-	float32 s;
-
-	float32 a;
-
-	float32 max_vel;
-	float32 size;
-
-	int32   width;
-	int32   height;
-};
-
-
-typedef struct boids_application_t BoidsApplication;
-struct boids_application_t {
-	Param p;
-	int32 n;
-	Boid *bs;
-};
-
 internal bool8
-has_influence(Boid *b_j, Boid *b_i, Param *p) {
-	vec2 v_rel = vec2_sub(b_j->pos, b_i->pos);
-	return vec2_mag(v_rel) < p->r
-		&& (vec2_angle(b_i->vel, v_rel) < p->theta_max
-		    || vec2_angle(b_i->vel, v_rel) > (2*3.14) - p->theta_max);
+has_influence(Boid *self, Boid *other, Param *p) {
+	vec2 v_rel = vec2_sub(self->pos, other->pos);
+	return vec2_mag_sq(v_rel) < (p->r * p->r)
+		&& (vec2_angle(other->vel, v_rel) < p->theta_max
+		    || vec2_angle(other->vel, v_rel) > (2*3.14) - p->theta_max);
 }
 
 internal void
-get_influencers(Boid *b, Boid *bs, int n, Param *p,
-		Boid *influencers[], int *m) {
-	int32 k = 0;
-	for (int32 i = 0; i < n; ++i) {
-		if (b != &bs[i] && has_influence(b, &bs[i], p)) {
-			influencers[k] = &bs[i];
-			++k;
+update_boid_(CTU *node, Boid *self, Boid *boids, Param *p,
+	     vec2 *coh, vec2 *sep, vec2 *ali, int32 *n_in_range)
+{
+	vec2 nearest_point = {
+		Clamp(node->o.x, self->pos.x, node->o.x + node->size),
+		Clamp(node->o.y, self->pos.y, node->o.y + node->size),
+	};
+	if (vec2_dist_sq(self->pos, nearest_point) >= (p->r * p->r)) {
+		return;
+	}
+
+	if (node->state == CTU_LEAF) {
+		for (int32 i = 0; i < node->n; ++i) {
+			Boid *other = &boids[node->indices[i]];
+			if (has_influence(self, other, p)) {
+				*coh = vec2_add(*coh, other->pos);
+				*ali = vec2_add(*ali, other->vel);
+				if (vec2_dist_sq(self->pos, other->pos) < (p->s_r * p->s_r)) {
+					*sep = vec2_sub(*sep, vec2_sub(other->pos, self->pos));
+				}
+				++(*n_in_range);
+			}
 		}
+		return;
 	}
-	*m = k;
-}
 
-internal inline vec2
-cohesion(Boid *b, Boid *influencers[], int m, Param *p) {
-	vec2 v = {0, 0};
-	if (m == 0) {
-		return v;
+	for (int32 i = 0; i < 4; ++i) {
+		CTU *child = &node->children[i];
+		update_boid_(child, self, boids, p, coh, sep, ali, n_in_range);
 	}
-	for (int32 i = 0; i < m; ++i) {
-		v = vec2_add(v, influencers[i]->pos);
-	}
-	v = vec2_div(v, m);
-	v = vec2_sub(v, b->pos);
-	v = vec2_mul(v, p->c);
-	return v;
-}
-
-internal inline vec2
-seperation(Boid *b, Boid *influencers[], int m, Param *p) {
-	vec2 v = {0, 0};
-	for (int32 i = 0; i < m; ++i) {
-		Boid *b_i = influencers[i];
-		if (vec2_dist(b->pos, b_i->pos) < p->s_r) {
-			v = vec2_sub(v, vec2_sub(b_i->pos, b->pos));
-		}
-	}
-	v = vec2_mul(v, p->s);
-	return v;
-}
-
-internal inline vec2
-alignment(Boid *b, Boid *influencers[], int m, Param *p) {
-	vec2 v = {0, 0};
-	if (m == 0) {
-		return v;
-	}
-	for (int32 i = 0; i < m; ++i) {
-		v = vec2_add(v, influencers[i]->vel);
-	}
-	v = vec2_div(v, m);
-	v = vec2_sub(v, b->vel);
-	v = vec2_mul(v, p->a);
-	return v;
 }
 
 internal void
-update_boid(BoidsApplication *app, Boid *b) {
-	Boid *bs = app->bs;
-	Param *p = &app->p;
-	int32 n = app->n;
+update_boid(BoidsApplication *app, Boid *b, QuadTree *T)
+{
+	Param *p  = &app->p;
 
-	Boid *influencers[n];
-	int32 m;
-	get_influencers(b, bs, n, p, influencers, &m);
+	vec2 coh, sep, ali;
+	coh = sep = ali = {0, 0};
 
-	b->vel = vec2_add(b->vel, cohesion(b, influencers, m, p));
-	b->vel = vec2_add(b->vel, seperation(b, influencers, m, p));
-	b->vel = vec2_add(b->vel, alignment(b, influencers, m, p));
-	b->vel.x = Clamp(-p->max_vel, b->vel.x, p->max_vel);
-	b->vel.y = Clamp(-p->max_vel, b->vel.y, p->max_vel);
+	int32 n_in_range = 0;
 
+	update_boid_(&T->root, b, app->bs, p, &coh, &sep, &ali, &n_in_range);
+
+	printf("%d\n", n_in_range);
+	if (n_in_range > 0) {
+		// process the forces
+		coh = vec2_div(coh, n_in_range);
+		coh = vec2_sub(coh, b->pos);
+		coh = vec2_mul(coh, p->c);
+
+		sep = vec2_mul(sep, p->s);
+
+		ali = vec2_div(ali, n_in_range);
+		ali = vec2_sub(ali, b->vel);
+		ali = vec2_mul(ali, p->a);
+
+		// accumulate forces
+		b->vel = vec2_add(b->vel, coh);
+		b->vel = vec2_add(b->vel, sep);
+		b->vel = vec2_add(b->vel, ali);
+		b->vel.x = Clamp(-p->max_vel, b->vel.x, p->max_vel);
+		b->vel.y = Clamp(-p->max_vel, b->vel.y, p->max_vel);
+	}
+
+	// update position
 	b->pos = vec2_add(b->pos, b->vel);
 
+	// reflect on border
 	if (b->pos.x <= 0) {
 		b->vel.x = Abs(b->vel.x);
 	} else if (b->pos.x > Min(p->width, p->height)) {
@@ -128,11 +88,12 @@ update_boid(BoidsApplication *app, Boid *b) {
 	}
 }
 
+
+
 internal void
-update_boids(BoidsApplication *app) {
-	// ... update the tree
+update_boids(BoidsApplication *app, QuadTree *T) {
 	for (int32 i = 0; i < app->n; ++i) {
-		update_boid(app, &(app->bs[i]));
+		update_boid(app, &(app->bs[i]), T);
 	}
 }
 

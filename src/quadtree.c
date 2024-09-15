@@ -72,23 +72,23 @@ qt_init(QuadTree *t, int16 size, Arena *a) {
 	root->size	= size;
 	root->n		= 0;
 	root->capacity	= 4;
-	root->indices	= (uint32 *)arena_alloc(a, (uint64)(sizeof(uint32) * 4));
+	root->indices	= (uint32 *)arena_alloc(a, sizeof(uint32) * 4);
 }
 
 internal bool32
-qt_insert(QuadTree *t, int32 index, Boid *bs, Arena *a) {
+qt_insert(QuadTree *t, uint32 index, Boid *bs, Arena *a) {
 	CTU   *node = &t->root;
-	int32 depth = 0;
+	uint32 depth = 0;
 
-	bool32 traversing = 1;
+	uint32 traversing = 1;
 	while (traversing) {
 		if (depth == MAX_DEPTH) {
 			if (node->capacity == node->n) {
 				uint32 *old_indices = node->indices;
 				node->capacity = node->capacity * 2;
-				uint64 bufsize = sizeof(int32) * node->capacity;
+				uint64 bufsize = sizeof(uint32) * node->capacity;
 				node->indices = (uint32 *)arena_alloc(a, bufsize);
-				memcpy(node->indices, old_indices, node->n);
+				memcpy(node->indices, old_indices, node->n * sizeof(uint32));
 			}
 			node->indices[node->n] = index;
 			node->n++;
@@ -102,13 +102,13 @@ qt_insert(QuadTree *t, int32 index, Boid *bs, Arena *a) {
 			} else {
 				int16 m_ = node->size / 2;
 
-				CTU *children = (CTU *)arena_alloc(a, (uint64)(4 * sizeof(CTU)));
+				CTU *children = (CTU *)arena_alloc(a, 4 * sizeof(CTU));
 				for (int32 i = 0; i < 4; ++i) {
 					children[i].size     = m_;
 					children[i].state    = CTU_LEAF;
 					children[i].n        = 0;
 					children[i].capacity = MAX_PER_CTU;
-					children[i].indices  = (uint32 *)arena_alloc(a, (uint32)(sizeof(int32) * MAX_PER_CTU));
+					children[i].indices  = (uint32 *)arena_alloc(a, sizeof(int32) * MAX_PER_CTU);
 				}
 				children[QUADRANT_NE].o = {node->o.x + m_, node->o.y + m_};
 				children[QUADRANT_SE].o = {node->o.x + m_, node->o.y};
@@ -116,7 +116,7 @@ qt_insert(QuadTree *t, int32 index, Boid *bs, Arena *a) {
 				children[QUADRANT_SW].o = {node->o.x, node->o.y};
 
 				for (int32 i = 0; i < node->n; ++i) {
-					int32 index_ = node->indices[i];
+					uint32 index_ = node->indices[i];
 					Quadrant q = get_quadrant(node->o, node->size,
 								  bs[index_].pos);
 					CTU *child = &children[q];
@@ -136,6 +136,4 @@ qt_insert(QuadTree *t, int32 index, Boid *bs, Arena *a) {
 
 	return false;
 }
-
-
 
