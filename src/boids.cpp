@@ -21,6 +21,8 @@ struct param_t {
 
 	float32 max_vel;
 	float32 size;
+
+	float32 mouseG;
 };
 
 
@@ -96,10 +98,7 @@ alignment(Boid *b, Boid *influencers[], int m, Param *p) {
 }
 
 internal void
-update_boid(BoidsApplication *app, Boid *b) {
-	// BUG(Elias): Boids are going out of bounds on the right and top
-	// borders.
-
+update_boid(BoidsApplication *app, Boid *b, vec2 mouse) {
 	Boid *bs = app->bs;
 	Param *p = &app->p;
 	int32 n = app->n;
@@ -111,9 +110,14 @@ update_boid(BoidsApplication *app, Boid *b) {
 	b->vel = vec2_add(b->vel, cohesion(b, influencers, m, p));
 	b->vel = vec2_add(b->vel, seperation(b, influencers, m, p));
 	b->vel = vec2_add(b->vel, alignment(b, influencers, m, p));
+
+	vec2 mousepull = {mouse.x - b->pos.x, mouse.y - b->pos.y};
+	mousepull = vec2_div(mousepull, vec2_mag(mousepull));
+	mousepull = vec2_mul(mousepull, p->mouseG*1.0/vec2_dist(mouse, b->pos));
+	b->vel = vec2_add(b->vel, mousepull);
+
 	b->vel.x = Clamp(-p->max_vel, b->vel.x, p->max_vel);
 	b->vel.y = Clamp(-p->max_vel, b->vel.y, p->max_vel);
-
 	b->pos = vec2_add(b->pos, b->vel);
 
 	if (b->pos.x <= 0) {
@@ -129,9 +133,9 @@ update_boid(BoidsApplication *app, Boid *b) {
 }
 
 internal void
-update_boids(BoidsApplication *app) {
+update_boids(BoidsApplication *app, vec2 mouse) {
 	for (int32 i = 0; i < app->n; ++i) {
-		update_boid(app, &(app->bs[i]));
+		update_boid(app, &(app->bs[i]), mouse);
 	}
 }
 
@@ -155,6 +159,7 @@ init_boids_app(BoidsApplication *app) {
 	p->a = 0.1;
 	p->max_vel = 10.0;
 	p->size = 1.0f;
+	p->mouseG = 9.81;
 
 	app->bs = (Boid *)calloc(MAX_BOIDS, sizeof(Boid));
 	for (int32 i = 0; i < MAX_BOIDS; ++i) {
