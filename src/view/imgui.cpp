@@ -42,7 +42,7 @@ imgui_frame(Process *p) {
 	/* ImGui::SliderFloat("mouseG", &p->boids_app.p.mouseG, 0.0f, 100.0f); */
 	/* ImGui::End(); */
 #else
-	ImGui::SetNextWindowSize(ImVec2(500, 300));
+	ImGui::SetNextWindowSize(ImVec2(500, 340));
 	ImGui::Begin("Controls", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 	ImGui::Text("Process Information");
 	ImGui::Text("Frame Time: %.3f ms | FPS: %.1f",
@@ -56,9 +56,14 @@ imgui_frame(Process *p) {
 	ImGui::SliderFloat("Separation Radius", &p->boids_app.p.s_r, 0.0f, 100.0f);
 	ImGui::SliderFloat("Radius", &p->boids_app.p.r, 0.0f, 500.0f);
 	ImGui::SliderFloat("Theta Max", &p->boids_app.p.theta_max, 0.0f, 3.14f/2.0f);
-	ImGui::SliderFloat("Max Velocity", &p->boids_app.p.max_vel, 1.0f, 20000.0f);
+	ImGui::SliderFloat("Max Velocity", &p->boids_app.p.max_vel, 1.0f, 20000.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
+
+	ImGui::Checkbox("mouseG", (bool *)&p->boids_app.p.mouseG_enabled);
+	if (p->boids_app.p.mouseG_enabled) {
+		ImGui::SliderFloat("mouseG Strength", &p->boids_app.p.mouseG, 1.0f, 700.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
+	}
+
 	ImGui::SliderFloat("Point Size", &p->boids_app.p.size, 1.0f, 10.0f);
-	ImGui::SliderFloat("mouseG", &p->boids_app.p.mouseG, 0.0f, 1000.0f);
 	ImGui::End();
 #endif
 

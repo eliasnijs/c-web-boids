@@ -23,6 +23,7 @@ struct param_t {
 	float32 size;
 
 	float32 mouseG;
+	bool32 mouseG_enabled;
 };
 
 
@@ -111,10 +112,12 @@ update_boid(BoidsApplication *app, Boid *b, vec2 mouse) {
 	b->vel = vec2_add(b->vel, seperation(b, influencers, m, p));
 	b->vel = vec2_add(b->vel, alignment(b, influencers, m, p));
 
-	vec2 mousepull = {mouse.x - b->pos.x, mouse.y - b->pos.y};
-	mousepull = vec2_div(mousepull, vec2_mag(mousepull));
-	mousepull = vec2_mul(mousepull, p->mouseG*1.0/vec2_dist(mouse, b->pos));
-	b->vel = vec2_add(b->vel, mousepull);
+	if (p->mouseG_enabled) {
+		vec2 mousepull = {mouse.x - b->pos.x, mouse.y - b->pos.y};
+		mousepull = vec2_div(mousepull, vec2_mag(mousepull));
+		mousepull = vec2_mul(mousepull, p->mouseG*1.0/vec2_dist(mouse, b->pos));
+		b->vel = vec2_add(b->vel, mousepull);
+	}
 
 	b->vel.x = Clamp(-p->max_vel, b->vel.x, p->max_vel);
 	b->vel.y = Clamp(-p->max_vel, b->vel.y, p->max_vel);
