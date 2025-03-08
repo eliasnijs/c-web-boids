@@ -3,8 +3,18 @@ imgui_init(GLFWwindow* window) {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	ImGui::StyleColorsDark();
+	ImGui::StyleColorsLight();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+	// Customize colors
+	ImGuiStyle& style = ImGui::GetStyle();
+
+	ImVec4 accentColor = ImVec4(0.76f, 1.0f, 0.05f, 1.0f);
+	style.Colors[ImGuiCol_TitleBgActive] = accentColor;
+	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.92f, 0.92f, 0.92f, 0.9f);
+	style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.60f, 0.90f, 0.10f, 1.0f);
+	style.Colors[ImGuiCol_SliderGrabActive] = accentColor;
+	style.Colors[ImGuiCol_CheckMark] = accentColor;
 
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 #ifdef __EMSCRIPTEN__
