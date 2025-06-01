@@ -72,8 +72,8 @@ frame() {
 
 	float64 new_xpos = 0.0, new_ypos = 0.0;
 	glfwGetCursorPos(p->ctx.window, &new_xpos, &new_ypos);
-
 	vec2 mouse = {(float32)new_xpos, (float32)new_ypos};
+
 	update_boids(&p->boids_app, mouse);
 	render(&p->gpu, &p->boids_app);
 

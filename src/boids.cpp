@@ -6,7 +6,6 @@ struct boid_t {
 	vec2 vel;
 };
 
-
 typedef struct param_t Param;
 struct param_t {
 	float32 r;
@@ -160,9 +159,10 @@ init_boids_app(BoidsApplication *app) {
 	p->s_r = 10;
 	p->s = 0.1;
 	p->a = 0.1;
-	p->max_vel = 10.0;
+	p->max_vel = 20000.0;
 	p->size = 1.0f;
 	p->mouseG = 9.81;
+	p->mouseG_enabled = false;
 
 	app->bs = (Boid *)calloc(MAX_BOIDS, sizeof(Boid));
 	for (int32 i = 0; i < MAX_BOIDS; ++i) {
