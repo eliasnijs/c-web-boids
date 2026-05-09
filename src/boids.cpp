@@ -1,4 +1,4 @@
-#define MAX_BOIDS 2000
+#define MAX_BOIDS 20000
 
 typedef struct boid_t Boid;
 struct boid_t {
@@ -121,8 +121,10 @@ update_boid(BoidsApplication *app, Boid *b, vec2 mouse) {
 		b->vel = vec2_add(b->vel, mousepull);
 	}
 
-	b->vel.x = Clamp(-p->max_vel, b->vel.x, p->max_vel);
-	b->vel.y = Clamp(-p->max_vel, b->vel.y, p->max_vel);
+	float32 speed = vec2_mag(b->vel);
+	if (speed > p->max_vel) {
+		b->vel = vec2_mul(vec2_div(b->vel, speed), p->max_vel);
+	}
 	b->pos = vec2_add(b->pos, b->vel);
 
 	if (b->pos.x <= 0) {
@@ -155,7 +157,7 @@ init_boid(Boid *b, Param *p) {
 internal void
 init_boids_app(BoidsApplication *app) {
 	Param *p = &app->p;
-	app->n = 2000;
+	app->n = MAX_BOIDS;
 	p->r = 50;
 	p->theta_max = 3.14 / 5;
 	p->c = 0.01;

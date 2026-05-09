@@ -50,7 +50,7 @@ imgui_frame(Process *p) {
 		    p->ctx.frame_time * 1000.0f, p->ctx.fps);
 	ImGui::Separator();
 	ImGui::Text("Boids controls");
-	ImGui::SliderInt("Number of Boids", &p->boids_app.n, 0, MAX_BOIDS);
+	ImGui::SliderInt("Number of Boids", &p->boids_app.n, 0, MAX_BOIDS, "%d", ImGuiSliderFlags_Logarithmic);
 	ImGui::SliderFloat("Cohesion", &p->boids_app.p.c, 0.0f, 1.0f);
 	ImGui::SliderFloat("Separation", &p->boids_app.p.s, 0.0f, 1.0f);
 	ImGui::SliderFloat("Alignment", &p->boids_app.p.a, 0.0f, 1.0f);

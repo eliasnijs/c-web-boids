@@ -74,8 +74,7 @@ frame() {
 	glfwGetCursorPos(p->ctx.window, &new_xpos, &new_ypos);
 
 	vec2 mouse = {(float32)new_xpos, (float32)new_ypos};
-	update_boids(&p->boids_app, mouse);
-	render(&p->gpu, &p->boids_app);
+	render(&p->gpu, &p->boids_app, mouse);
 
 	imgui_frame(p);
 
@@ -98,7 +97,7 @@ main() {
 	PROCESS.ctx.window = window;
 	PROCESS.ctx.max_fps = 60.0f;
 	init_boids_app(&PROCESS.boids_app);
-	if (!gpu_init(&PROCESS.gpu)) {
+	if (!gpu_init(&PROCESS.gpu, &PROCESS.boids_app)) {
 		print_error("Failed to initialize gpu");
 		return 1;
 	}

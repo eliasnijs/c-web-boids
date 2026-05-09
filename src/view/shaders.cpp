@@ -7,8 +7,8 @@ load_glshader(char *path, uint32 type, uint32 *shader_id) {
 	}
 
 	uint32 flength = flen(f);
-	char *fbuffer = (char *)calloc(flength, sizeof(char));
-	int32 bytesread = fread(fbuffer, flength, sizeof(char), f);
+	char *fbuffer = (char *)calloc(flength + 1, sizeof(char));
+	int32 bytesread = fread(fbuffer, sizeof(char), flength, f);
 	if (bytesread == 0) {
 		print_error("reading file failed");
 	}
