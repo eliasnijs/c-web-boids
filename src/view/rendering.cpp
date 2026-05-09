@@ -45,6 +45,8 @@ render(GpuContext *gpu, BoidsApplication *app) {
 	GLint u_window_width  = glGetUniformLocation(gpu->boids_program, "u_window_width" );
 	GLint u_window_height = glGetUniformLocation(gpu->boids_program, "u_window_height");
 	GLint u_point_size    = glGetUniformLocation(gpu->boids_program, "u_point_size"   );
+	GLint u_color_mode    = glGetUniformLocation(gpu->boids_program, "u_color_mode"   );
+	GLint u_max_vel       = glGetUniformLocation(gpu->boids_program, "u_max_vel"      );
 
 	glBindVertexArray(gpu->boids_vao_id);
 	glBindBuffer(GL_ARRAY_BUFFER, gpu->boids_vbo_id);
@@ -61,5 +63,7 @@ render(GpuContext *gpu, BoidsApplication *app) {
 	glUniform1f(u_window_width, window_width);
 	glUniform1f(u_window_height, window_height);
 	glUniform1f(u_point_size, app->p.size);
+	glUniform1f(u_color_mode, (float)app->p.color_mode);
+	glUniform1f(u_max_vel, app->p.max_vel);
 	glDrawArrays(GL_POINTS, 0, app->n);
 }

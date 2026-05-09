@@ -24,6 +24,8 @@ struct param_t {
 
 	float32 mouseG;
 	bool32 mouseG_enabled;
+
+	int32 color_mode; // 0 = direction, 1 = speed
 };
 
 
@@ -160,9 +162,11 @@ init_boids_app(BoidsApplication *app) {
 	p->s_r = 10;
 	p->s = 0.1;
 	p->a = 0.1;
-	p->max_vel = 10.0;
+	p->max_vel = 20000.0;
 	p->size = 1.0f;
-	p->mouseG = 9.81;
+	p->mouseG = 700.0;
+	p->mouseG_enabled = true;
+	p->color_mode = 1;
 
 	app->bs = (Boid *)calloc(MAX_BOIDS, sizeof(Boid));
 	for (int32 i = 0; i < MAX_BOIDS; ++i) {

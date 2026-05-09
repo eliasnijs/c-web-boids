@@ -3,18 +3,9 @@ imgui_init(GLFWwindow* window) {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	ImGui::StyleColorsLight();
+	ImGui::StyleColorsDark();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-	// Customize colors
-	ImGuiStyle& style = ImGui::GetStyle();
-
-	ImVec4 accentColor = ImVec4(0.76f, 1.0f, 0.05f, 1.0f);
-	style.Colors[ImGuiCol_TitleBgActive] = accentColor;
-	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.92f, 0.92f, 0.92f, 0.9f);
-	style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.60f, 0.90f, 0.10f, 1.0f);
-	style.Colors[ImGuiCol_SliderGrabActive] = accentColor;
-	style.Colors[ImGuiCol_CheckMark] = accentColor;
 
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 #ifdef __EMSCRIPTEN__
@@ -52,7 +43,7 @@ imgui_frame(Process *p) {
 	/* ImGui::SliderFloat("mouseG", &p->boids_app.p.mouseG, 0.0f, 100.0f); */
 	/* ImGui::End(); */
 #else
-	ImGui::SetNextWindowSize(ImVec2(500, 340));
+	ImGui::SetNextWindowSize(ImVec2(500, 390));
 	ImGui::Begin("Controls", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 	ImGui::Text("Process Information");
 	ImGui::Text("Frame Time: %.3f ms | FPS: %.1f",
@@ -74,6 +65,11 @@ imgui_frame(Process *p) {
 	}
 
 	ImGui::SliderFloat("Point Size", &p->boids_app.p.size, 1.0f, 10.0f);
+
+	ImGui::Separator();
+	ImGui::Text("Rendering");
+	const char* color_modes[] = { "Direction", "Speed" };
+	ImGui::Combo("Color Mode", &p->boids_app.p.color_mode, color_modes, 2);
 	ImGui::End();
 #endif
 
