@@ -25,6 +25,16 @@ struct param_t {
 	float32 mouseG;
 	bool32 mouseG_enabled;
 
+	bool32 cavity_enabled;
+	float32 cavity_x;
+	float32 cavity_y;
+	float32 cavity_r;
+	float32 cavity_strength;
+	int32   cavity_n;
+	int32   cavity_shape; // 0 = polygon, 1 = lemniscate
+	float32 cavity_amplitude;
+	float32 cavity_frequency;
+
 	int32 color_mode; // 0 = direction, 1 = speed
 };
 
@@ -168,6 +178,15 @@ init_boids_app(BoidsApplication *app) {
 	p->size = 1.0f;
 	p->mouseG = 700.0;
 	p->mouseG_enabled = true;
+	p->cavity_enabled = false;
+	p->cavity_x = 400.0f;
+	p->cavity_y = 300.0f;
+	p->cavity_r = 150.0f;
+	p->cavity_strength = 50.0f;
+	p->cavity_n = 6;
+	p->cavity_shape = 0;
+	p->cavity_amplitude = 0.0f;
+	p->cavity_frequency = 1.0f;
 	p->color_mode = 1;
 
 	app->bs = (Boid *)calloc(MAX_BOIDS, sizeof(Boid));

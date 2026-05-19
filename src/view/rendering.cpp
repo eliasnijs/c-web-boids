@@ -98,7 +98,7 @@ gpu_die(GpuContext *gpu) {
 }
 
 internal void
-render(GpuContext *gpu, BoidsApplication *app, vec2 mouse) {
+render(GpuContext *gpu, BoidsApplication *app, vec2 mouse, float time) {
 	int32 cur  = gpu->current;
 	int32 next = 1 - cur;
 	Param *p   = &app->p;
@@ -125,6 +125,15 @@ render(GpuContext *gpu, BoidsApplication *app, vec2 mouse) {
 	glUniform1f(glGetUniformLocation(gpu->update_program, "u_mouseG_enabled"), (float)p->mouseG_enabled);
 	glUniform1f(glGetUniformLocation(gpu->update_program, "u_mouseG"),         p->mouseG);
 	glUniform2f(glGetUniformLocation(gpu->update_program, "u_mouse"),          mouse.x, mouse.y);
+	glUniform1f(glGetUniformLocation(gpu->update_program, "u_cavity_enabled"), (float)p->cavity_enabled);
+	glUniform2f(glGetUniformLocation(gpu->update_program, "u_cavity_center"),  p->cavity_x, p->cavity_y);
+	glUniform1f(glGetUniformLocation(gpu->update_program, "u_cavity_r"),       p->cavity_r);
+	glUniform1f(glGetUniformLocation(gpu->update_program, "u_cavity_strength"), p->cavity_strength);
+	glUniform1f(glGetUniformLocation(gpu->update_program, "u_cavity_n"),         (float)p->cavity_n);
+	glUniform1f(glGetUniformLocation(gpu->update_program, "u_cavity_shape"),     (float)p->cavity_shape);
+	glUniform1f(glGetUniformLocation(gpu->update_program, "u_cavity_amplitude"), p->cavity_amplitude);
+	glUniform1f(glGetUniformLocation(gpu->update_program, "u_cavity_frequency"), p->cavity_frequency);
+	glUniform1f(glGetUniformLocation(gpu->update_program, "u_time"),             time);
 
 	glBindVertexArray(gpu->empty_vao);
 	glDrawArrays(GL_TRIANGLES, 0, 3);

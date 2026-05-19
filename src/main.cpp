@@ -74,7 +74,7 @@ frame() {
 	glfwGetCursorPos(p->ctx.window, &new_xpos, &new_ypos);
 
 	vec2 mouse = {(float32)new_xpos, (float32)new_ypos};
-	render(&p->gpu, &p->boids_app, mouse);
+	render(&p->gpu, &p->boids_app, mouse, (float)glfwGetTime());
 
 	imgui_frame(p);
 

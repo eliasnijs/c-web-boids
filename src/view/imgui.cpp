@@ -43,7 +43,7 @@ imgui_frame(Process *p) {
 	/* ImGui::SliderFloat("mouseG", &p->boids_app.p.mouseG, 0.0f, 100.0f); */
 	/* ImGui::End(); */
 #else
-	ImGui::SetNextWindowSize(ImVec2(500, 390));
+	ImGui::SetNextWindowSize(ImVec2(500, 510));
 	ImGui::Begin("Controls", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 	ImGui::Text("Process Information");
 	ImGui::Text("Frame Time: %.3f ms | FPS: %.1f",
@@ -65,6 +65,53 @@ imgui_frame(Process *p) {
 	}
 
 	ImGui::SliderFloat("Point Size", &p->boids_app.p.size, 1.0f, 10.0f);
+
+	ImGui::Separator();
+	ImGui::Text("Resonating Cavity");
+	ImGui::Checkbox("Cavity Enabled", (bool *)&p->boids_app.p.cavity_enabled);
+	if (p->boids_app.p.cavity_enabled) {
+		const char* shapes[] = { "Polygon", "Lemniscate" };
+		ImGui::Combo("Shape", &p->boids_app.p.cavity_shape, shapes, 2);
+		ImGui::SliderFloat("Cavity X", &p->boids_app.p.cavity_x, 0.0f, (float)window_width);
+		ImGui::SliderFloat("Cavity Y", &p->boids_app.p.cavity_y, 0.0f, (float)window_height);
+		ImGui::SliderFloat("Cavity Radius", &p->boids_app.p.cavity_r, 10.0f, 500.0f);
+		ImGui::SliderFloat("Cavity Strength", &p->boids_app.p.cavity_strength, 0.0f, 500.0f, "%.1f", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderFloat("Resonance Amplitude", &p->boids_app.p.cavity_amplitude, 0.0f, 500.0f, "%.1f", ImGuiSliderFlags_Logarithmic);
+		ImGui::SliderFloat("Resonance Frequency", &p->boids_app.p.cavity_frequency, 0.0f, 20.0f, "%.2f Hz");
+		if (p->boids_app.p.cavity_shape == 0) {
+			ImGui::SliderInt("Cavity Corners", &p->boids_app.p.cavity_n, 3, 32);
+		}
+
+		ImDrawList *dl = ImGui::GetBackgroundDrawList();
+		float cx = p->boids_app.p.cavity_x;
+		float cy = p->boids_app.p.cavity_y;
+		float cr = p->boids_app.p.cavity_r;
+		ImU32 col = IM_COL32(255, 255, 255, 120);
+
+		if (p->boids_app.p.cavity_shape == 0) {
+			int cn = p->boids_app.p.cavity_n;
+			float angle_step = 2.0f * 3.14159265f / (float)cn;
+			for (int i = 0; i < cn; ++i) {
+				float a0 = i       * angle_step;
+				float a1 = (i + 1) * angle_step;
+				dl->AddLine(ImVec2(cx + cr * cosf(a0), cy + cr * sinf(a0)),
+				            ImVec2(cx + cr * cosf(a1), cy + cr * sinf(a1)),
+				            col, 1.5f);
+			}
+		} else {
+			int samples = 256;
+			for (int i = 0; i < samples; ++i) {
+				float t0 = 2.0f * 3.14159265f * (float)i       / (float)samples;
+				float t1 = 2.0f * 3.14159265f * (float)(i + 1) / (float)samples;
+				auto lemni = [&](float t) -> ImVec2 {
+					float s = sinf(t), c = cosf(t);
+					float d = 1.0f + s * s;
+					return ImVec2(cx + cr * c / d, cy + cr * s * c / d);
+				};
+				dl->AddLine(lemni(t0), lemni(t1), col, 1.5f);
+			}
+		}
+	}
 
 	ImGui::Separator();
 	ImGui::Text("Rendering");

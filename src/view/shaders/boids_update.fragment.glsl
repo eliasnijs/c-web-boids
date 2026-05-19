@@ -16,6 +16,15 @@ uniform float u_max_vel;
 uniform float u_mouseG_enabled;
 uniform float u_mouseG;
 uniform vec2  u_mouse;
+uniform float u_cavity_enabled;
+uniform vec2  u_cavity_center;
+uniform float u_cavity_r;
+uniform float u_cavity_strength;
+uniform float u_cavity_n;
+uniform float u_cavity_shape;
+uniform float u_cavity_amplitude;
+uniform float u_cavity_frequency;
+uniform float u_time;
 
 out vec4 out_boid;
 
@@ -77,6 +86,51 @@ void main() {
         new_vel += (diff / dist) * (u_mouseG / dist);
     }
 
+    if (u_cavity_enabled > 0.5) {
+        float cavity_r = u_cavity_r;
+        float cavity_strength = u_cavity_strength + u_cavity_amplitude * sin(6.28318530718 * u_cavity_frequency * u_time);
+        vec2 local = pos_i - u_cavity_center;
+        vec2 best_point = vec2(0.0);
+
+        if (u_cavity_shape < 0.5) {
+            // polygon: find nearest point on perimeter
+            int n = int(u_cavity_n);
+            float angle_step = 6.28318530718 / float(n);
+            float boid_angle = atan(local.y, local.x);
+            float sector = floor((boid_angle + 6.28318530718) / angle_step);
+            float best_dist2 = 1e18;
+            for (int k = 0; k < 2; k++) {
+                float a0 = (sector + float(k))       * angle_step;
+                float a1 = (sector + float(k) + 1.0) * angle_step;
+                vec2 v0 = cavity_r * vec2(cos(a0), sin(a0));
+                vec2 v1 = cavity_r * vec2(cos(a1), sin(a1));
+                vec2 edge = v1 - v0;
+                float t = clamp(dot(local - v0, edge) / dot(edge, edge), 0.0, 1.0);
+                vec2 closest = v0 + t * edge;
+                float d2 = dot(local - closest, local - closest);
+                if (d2 < best_dist2) { best_dist2 = d2; best_point = closest; }
+            }
+        } else {
+            // lemniscate of Bernoulli: x = a*cos(t)/(1+sin²(t)), y = a*sin(t)*cos(t)/(1+sin²(t))
+            float a = cavity_r;
+            float best_dist2 = 1e18;
+            int samples = 128;
+            for (int k = 0; k < samples; k++) {
+                float t = 6.28318530718 * float(k) / float(samples);
+                float s = sin(t);
+                float c = cos(t);
+                float denom = 1.0 + s * s;
+                vec2 p = vec2(a * c / denom, a * s * c / denom);
+                float d2 = dot(local - p, local - p);
+                if (d2 < best_dist2) { best_dist2 = d2; best_point = p; }
+            }
+        }
+
+        vec2 to_perimeter = best_point - local;
+        float dist_to_perimeter = length(to_perimeter) + 0.001;
+        new_vel += (to_perimeter / dist_to_perimeter) * (cavity_strength * dist_to_perimeter / (dist_to_perimeter + cavity_r));
+    }
+
     float speed = length(new_vel);
     if (speed > u_max_vel) {
         new_vel = (new_vel / speed) * u_max_vel;
@@ -84,12 +138,11 @@ void main() {
 
     vec2 new_pos = pos_i + new_vel;
 
-    if (new_pos.x <= 0.0)                new_vel.x =  abs(new_vel.x);
-    else if (new_pos.x > u_window_width) new_vel.x = -abs(new_vel.x);
-    if (new_pos.y <= 0.0)                new_vel.y =  abs(new_vel.y);
+    if (new_pos.x <= 0.0)                 new_vel.x =  abs(new_vel.x);
+    else if (new_pos.x > u_window_width)  new_vel.x = -abs(new_vel.x);
+    if (new_pos.y <= 0.0)                 new_vel.y =  abs(new_vel.y);
     else if (new_pos.y > u_window_height) new_vel.y = -abs(new_vel.y);
 
     new_pos = pos_i + new_vel;
-
     out_boid = vec4(new_pos, new_vel);
 }
